@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <title>NodeJS and Twitter API Stream</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row tweets">
+        <h1>Twitter stream live</h1>
+        <h3>Put a hashtag you want to follow live</h3>
+            <form action="">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="tweet">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+  var socket = io();
+  var count = 0;
+  socket.on('tweet', function (data) {
+      count++;
+      $('.tweets').append('<p>' + count + ': ' + data + '</p>')
+  });
+  $('form').submit(function() {
+      socket.emit('hashtag', $('#tweet').val());
+      $('#tweet').val('');
+      return false;
+  });
+</script>
+</html>
