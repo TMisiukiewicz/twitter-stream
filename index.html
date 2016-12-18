@@ -26,9 +26,25 @@
 <script>
   var socket = io();
   var count = 0;
+  var tweets = [];
+  $('#tweet').val('');
   socket.on('tweet', function (data) {
       count++;
-      $('.tweets').append('<p>' + count + ': ' + data + '</p>')
+      if(count < 15) {
+          tweets.push(data);
+      } else {
+          tweets.splice(0, 1);
+          $('.tweets p').last().remove();
+          tweets.push(data);
+      }
+      
+      if(tweets.length == 1) {
+        // $('.tweets').append('<p>' + tweets[tweets.length-1] + '</p>');
+        $('<p>' + tweets[tweets.length-1] + '</p>').hide().appendTo('.tweets').fadeIn(200);
+      } else {
+          $('<p>' + tweets[tweets.length-1] + '</p>').hide().insertBefore('.tweets p:first-of-type').fadeIn(500);
+      }
+      
   });
   $('form').submit(function() {
       socket.emit('hashtag', $('#tweet').val());
@@ -36,4 +52,11 @@
       return false;
   });
 </script>
+<style>
+    p {
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e4e4e4;
+    }
+</style>
 </html>
