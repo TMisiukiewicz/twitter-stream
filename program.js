@@ -1,36 +1,46 @@
 var Twitter = require('twitter');
-var app = require('http').createServer(handler)
-var io = require('socket.io')(app);
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var session = require('express-session');
 var fs = require('fs');
 
-app.listen(3000);
+server.listen(3000, () => {
+    console.log('Listening on port 3000');
+});
 
-function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading index.html');
-    }
-    res.writeHead(200);
-    res.end(data);
-  });
-}
+app.get('/', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
 
 var client = new Twitter({
-    consumer_key: 'ypsZI8pyzLXD5OgSJVwuzJbtp',
-    consumer_secret: 'gA5jiIAbSP2BBpdWqzPGkiktXuQHILLOX0rdEkAIO1rxrxcFz0',
-    access_token_key: '2370044539-sR5yZW5geQPtziaItqi313e83Bytp96LovAVJti',
-    access_token_secret: 'I1GOo3guEWnz7V079veT1Tl6BUU3DCDFtRlmWV5F2vm3n'
-});
+        consumer_key: 'ypsZI8pyzLXD5OgSJVwuzJbtp',
+        consumer_secret: 'gA5jiIAbSP2BBpdWqzPGkiktXuQHILLOX0rdEkAIO1rxrxcFz0',
+        access_token_key: '2370044539-sR5yZW5geQPtziaItqi313e83Bytp96LovAVJti',
+        access_token_secret: 'I1GOo3guEWnz7V079veT1Tl6BUU3DCDFtRlmWV5F2vm3n'
+    });
+var data;
 io.on('connection', function(socket) {
     socket.on('hashtag', function(msg) {
-        client.stream('statuses/filter', {track: '#'+msg}, function(stream) {
+        if(msg.indexOf('#') == 0) {
+            var message = msg;
+        } else {
+            var message = '#' + msg;
+        }
+        client.stream('statuses/filter', {track: message}, function(stream) {
+            data = stream;
             stream.on('data', (tweet) => {
                 io.emit('tweet', tweet.text);
             }).on('error', (error) => {
                 console.log(error);
             });
         });
+    }).on('disconnect', () => {
+        if(data !== undefined) {
+            data.destroy((err) => {
+                console.log(err);
+            });
+        }
+        console.log('Disconnected');
     });
 });

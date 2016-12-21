@@ -24,7 +24,7 @@
     </div>
 </body>
 <script>
-  var socket = io();
+  var socket = io.connect('//malinka:3000', {'forceNew': true, 'reconnect': false});
   var count = 0;
   var tweets = [];
   $('#tweet').val('');
