@@ -7,19 +7,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,600,700&amp;subset=latin-ext" rel="stylesheet">
     <title>NodeJS and Twitter API Stream</title>
 </head>
 <body>
     <div class="container">
-        <div class="row tweets">
-        <h1>Twitter stream live</h1>
-        <h3>Put a hashtag you want to follow live</h3>
-            <form action="">
-                <div class="form-group">
-                    <input type="text" class="form-control" id="tweet">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Twitter stream live</h1>
+                <h3>Put a hashtag you want to follow live</h3>
+                    <form action="">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="tweet">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+            </div>
+        </div>
+        <div class="tweets">
         </div>
     </div>
 </body>
@@ -34,15 +39,20 @@
           tweets.push(data);
       } else {
           tweets.splice(0, 1);
-          $('.tweets p').last().remove();
+          $('.tweets div').last().remove();
           tweets.push(data);
       }
       
       if(tweets.length == 1) {
-        // $('.tweets').append('<p>' + tweets[tweets.length-1] + '</p>');
-        $('<p>' + tweets[tweets.length-1] + '</p>').hide().appendTo('.tweets').fadeIn(200);
+        $('<div class="row single-tweet">'
+        + '<div class="col-xs-1"><img src="' + tweets[tweets.length-1].image + '" class="img-responsive"></div>'
+         + '<div class="col-xs-11"><h5>' + tweets[tweets.length-1].user + '</h5>'
+         + '<p>' + tweets[tweets.length-1].content + '</p></div></div>').hide().appendTo('.tweets').fadeIn(200);
       } else {
-          $('<p>' + tweets[tweets.length-1] + '</p>').hide().insertBefore('.tweets p:first-of-type').fadeIn(500);
+          $('<div class="row single-tweet">'
+          + '<div class="col-xs-1"><img src="' + tweets[tweets.length-1].image + '" class="img-responsive"></div>'
+          + '<div class="col-xs-11"><h5>' + tweets[tweets.length-1].user + '</h5>'
+          + '<p>' + tweets[tweets.length-1].content + '</p></div></div>').hide().insertBefore('.tweets .single-tweet:first-of-type').fadeIn(500);
       }
       
   });
@@ -53,10 +63,47 @@
   });
 </script>
 <style>
-    p {
-        padding: 15px;
-        border-radius: 8px;
+    body {
+        font-family: 'Nunito Sans';
+    }
+    .tweets {
+        margin-top: 30px;
+    }
+    .single-tweet {
         border: 1px solid #e4e4e4;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        -webkit-box-shadow: 10px 10px 10px -3px rgba(0,0,0,0.08);
+        -moz-box-shadow: 10px 10px 10px -3px rgba(0,0,0,0.08);
+        box-shadow: 10px 10px 10px -3px rgba(0,0,0,0.08);
+    }
+    h5 {
+        font-weight: 700;
+        font-size: 18px;
+        margin-top: 0;
+    }
+    p {
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+    .btn-default {
+        border-radius: 0;
+        background: rgba(0, 132, 180, 0.7);
+        border: none;
+        padding: 8px 25px;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        transition: background 0.4s ease;
+    }
+    .btn-default:hover {
+        background: rgba(0, 132, 180, 1);
+        color: white;
+    }
+    .form-control {
+        border-radius: 0;
+        height: 40px;
     }
 </style>
 </html>

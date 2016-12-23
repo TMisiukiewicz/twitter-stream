@@ -30,7 +30,13 @@ io.on('connection', function(socket) {
         client.stream('statuses/filter', {track: message}, function(stream) {
             data = stream;
             stream.on('data', (tweet) => {
-                io.emit('tweet', tweet.text);
+                var tweetInfo = {
+                    'user': tweet.user.name,
+                    'screen_name': tweet.user.screen_name,
+                    'image': tweet.user.profile_image_url,
+                    'content': tweet.text
+                }
+                socket.emit('tweet', tweetInfo);
             }).on('error', (error) => {
                 console.log(error);
             });
